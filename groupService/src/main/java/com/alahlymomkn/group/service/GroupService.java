@@ -11,6 +11,7 @@ import com.alahlymomkn.group.mapper.GroupMapper;
 import com.alahlymomkn.group.policy.RoleAssignmentPolicy;
 import com.alahlymomkn.group.repo.GroupMemberRepository;
 import com.alahlymomkn.group.repo.GroupRepository;
+import com.alahlymomkn.user.service.UserService;
 import com.alahlymomkn.wallet.service.WalletService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ public class GroupService {
     private final List<RoleAssignmentPolicy> roleAssignmentPolicies;
     private final GroupMapper groupMapper;
     private final WalletService walletService;
+    private final UserService userService;
 
     @Transactional
     public GroupResponseDto createGroup(String groupName, Long creatorUserId) {
@@ -64,6 +66,7 @@ public class GroupService {
     @Transactional
     public void addMember(Long moderatorId, Long groupId, Long newUserId) {
         verifyModerator(groupId, moderatorId, "Only group moderators can add members.");
+        userService.ensureUserExists(newUserId);
 
         if (memberRepository.findByGroupIdAndUserId(groupId, newUserId).isPresent()) {
             return;

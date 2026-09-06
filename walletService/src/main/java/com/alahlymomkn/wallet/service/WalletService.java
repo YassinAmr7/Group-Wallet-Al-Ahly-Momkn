@@ -1,9 +1,7 @@
 package com.alahlymomkn.wallet.service;
 
-import com.alahlymomkn.common.enums.GroupRole;
 import com.alahlymomkn.common.enums.TransactionType;
 import com.alahlymomkn.common.enums.WalletType;
-import com.alahlymomkn.common.exceptions.AccessDeniedException;
 import com.alahlymomkn.common.exceptions.InsufficientFundsException;
 import com.alahlymomkn.common.exceptions.ResourceNotFoundException;
 import com.alahlymomkn.transaction.dto.TransactionResponseDto;
@@ -55,6 +53,16 @@ public class WalletService {
         return transactionService.getWalletStatement(personalWallet.getId());
     }
 
+
+    @Transactional
+    public WalletResponseDto createPersonalWallet(Long userId) {
+        walletRepository.findByUserIdAndType(userId, WalletType.PERSONAL)
+                .ifPresent(wallet -> {
+                    throw new IllegalStateException("Personal wallet already exists for user: " + userId);
+                });
+
+        return walletMapper.toResponseDto(createInitialPersonalWallet(userId));
+    }
 
     @Transactional
     public void createGroupWallet(Long groupId) {

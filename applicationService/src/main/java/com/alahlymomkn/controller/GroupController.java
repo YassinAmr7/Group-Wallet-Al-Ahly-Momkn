@@ -22,7 +22,7 @@ public class GroupController {
     private final WalletService walletService;
 
     @PostMapping
-    public ResponseEntity<GroupResponseDto> createGroup(@RequestBody String name, @RequestBody Long userId) {
+    public ResponseEntity<GroupResponseDto> createGroup(@RequestParam String name, @RequestHeader Long userId) {
         return ResponseEntity.ok(groupService.createGroup(name, userId));
     }
 

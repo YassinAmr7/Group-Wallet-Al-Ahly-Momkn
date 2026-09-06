@@ -83,6 +83,15 @@ public class GroupService {
                 .orElseThrow(() -> new AccessDeniedException("User is not a member of this group."));
     }
 
+    @Transactional(readOnly = true)
+    public void validateTreasurerAccess(Long userId, Long groupId) {
+        GroupMember member = memberRepository.findByGroupIdAndUserId(groupId, userId)
+                .orElseThrow(() -> new AccessDeniedException("User is not a member of this group."));
+
+        if (!member.getRoles().contains(GroupRole.TREASURER)) {
+            throw new AccessDeniedException("Only treasurers can execute expenses from the group wallet");
+        }
+    }
 
     private GroupMember verifyModerator(Long groupId, Long userId, String failureMessage) {
         GroupMember member = memberRepository.findByGroupIdAndUserId(groupId, userId)

@@ -15,7 +15,6 @@ public class TreasurerAssignmentPolicy implements RoleAssignmentPolicy {
 
     @Override
     public void apply(GroupMember requester, GroupMember target, GroupMemberRepository repo) {
-        target.getRoles().clear();
         target.getRoles().add(GroupRole.TREASURER);
         repo.save(target);
     }

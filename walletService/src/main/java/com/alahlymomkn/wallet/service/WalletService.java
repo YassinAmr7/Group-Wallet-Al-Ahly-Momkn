@@ -6,12 +6,7 @@ import com.alahlymomkn.common.enums.WalletType;
 import com.alahlymomkn.common.exceptions.AccessDeniedException;
 import com.alahlymomkn.common.exceptions.InsufficientFundsException;
 import com.alahlymomkn.common.exceptions.ResourceNotFoundException;
-import com.alahlymomkn.group.entity.GroupMember;
-import com.alahlymomkn.group.repo.GroupMemberRepository;
 import com.alahlymomkn.transaction.dto.TransactionResponseDto;
-import com.alahlymomkn.transaction.entity.Transaction;
-import com.alahlymomkn.transaction.mapper.TransactionMapper;
-import com.alahlymomkn.transaction.repository.TransactionRepository;
 import com.alahlymomkn.transaction.service.TransactionService;
 import com.alahlymomkn.wallet.dto.WalletResponseDto;
 import com.alahlymomkn.wallet.entity.Wallet;
@@ -29,7 +24,6 @@ import java.util.List;
 public class WalletService {
 
     private final WalletRepository walletRepository;
-    private final GroupMemberRepository memberRepository;
     private final WalletMapper walletMapper;
     private final TransactionService transactionService;
 
@@ -60,7 +54,6 @@ public class WalletService {
         Wallet personalWallet = findPersonalWallet(userId);
         return transactionService.getWalletStatement(personalWallet.getId());
     }
-
 
 
     @Transactional
@@ -102,7 +95,6 @@ public class WalletService {
     @Transactional
     public void executeExpense(Long treasurerUserId, Long groupId, BigDecimal amount) {
         validatePositiveAmount(amount);
-        verifyTreasurerRole(groupId, treasurerUserId);
 
         Wallet groupWallet = findGroupWallet(groupId);
         debit(groupWallet, amount, "Insufficient funds in group wallet");
@@ -110,7 +102,6 @@ public class WalletService {
         transactionService.record(amount, TransactionType.EXPENSE, groupWallet.getId(), null, treasurerUserId);
     }
 
-    // --- Private Domain Helpers ---
 
     private void debit(Wallet wallet, BigDecimal amount, String failureMessage) {
         if (wallet.getBalance().compareTo(amount) < 0) {
@@ -144,15 +135,6 @@ public class WalletService {
                         .version(0)
                         .build()
         );
-    }
-
-    private void verifyTreasurerRole(Long groupId, Long userId) {
-        GroupMember member = memberRepository.findByGroupIdAndUserId(groupId, userId)
-                .orElseThrow(() -> new AccessDeniedException("User is not a member of this group"));
-
-        if (!member.getRoles().contains(GroupRole.TREASURER)) {
-            throw new AccessDeniedException("Only treasurers can execute expenses from the group wallet");
-        }
     }
 
     private void validatePositiveAmount(BigDecimal amount) {

@@ -22,7 +22,7 @@ public class GroupController {
     private final WalletService walletService;
 
     @PostMapping
-    public ResponseEntity<GroupResponseDto> createGroup(@RequestParam String name, @RequestHeader Long userId) {
+    public ResponseEntity<GroupResponseDto> createGroup(@RequestBody String name, @RequestBody Long userId) {
         return ResponseEntity.ok(groupService.createGroup(name, userId));
     }
 
@@ -62,6 +62,7 @@ public class GroupController {
     public ResponseEntity<String> executeExpense(@PathVariable Long groupId,
                                                  @RequestParam BigDecimal amount,
                                                  @RequestHeader Long userId) {
+        groupService.validateTreasurerAccess(userId, groupId);
         walletService.executeExpense(userId, groupId, amount);
         return ResponseEntity.ok("Expense of " + amount + " EGP executed successfully!");
     }

@@ -3,6 +3,7 @@ package com.alahlymomkn.group.service;
 import com.alahlymomkn.common.enums.GroupRole;
 import com.alahlymomkn.common.exceptions.AccessDeniedException;
 import com.alahlymomkn.common.exceptions.ResourceNotFoundException;
+import com.alahlymomkn.common.exceptions.RoleNotFoundException;
 import com.alahlymomkn.group.dto.GroupResponseDto;
 import com.alahlymomkn.group.entity.Group;
 import com.alahlymomkn.group.entity.GroupMember;
@@ -55,7 +56,7 @@ public class GroupService {
         RoleAssignmentPolicy policy = roleAssignmentPolicies.stream()
                 .filter(rolePolicy -> rolePolicy.supports(newRole))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("No role assignment policy found for role: " + newRole));
+                .orElseThrow(() -> new RoleNotFoundException("No role assignment policy found for role: " + newRole));
 
         policy.apply(requester, target, memberRepository);
     }

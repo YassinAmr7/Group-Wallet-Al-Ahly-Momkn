@@ -106,4 +106,8 @@ public class GroupService {
         }
         return member;
     }
+
+    public List<Group> getUserGroups(Long userId) {
+        return groupRepository.findGroupsByUserId(userId);
+    }
 }

@@ -2,6 +2,7 @@ package com.alahlymomkn.controller;
 
 import com.alahlymomkn.common.enums.GroupRole;
 import com.alahlymomkn.group.dto.GroupResponseDto;
+import com.alahlymomkn.group.entity.Group;
 import com.alahlymomkn.group.service.GroupService;
 import com.alahlymomkn.transaction.dto.TransactionResponseDto;
 import com.alahlymomkn.wallet.dto.WalletResponseDto;
@@ -72,5 +73,10 @@ public class GroupController {
                                                                              @RequestHeader Long userId) {
         groupService.validateMemberAccess(userId, groupId);
         return ResponseEntity.ok(walletService.getGroupTransactions(groupId));
+    }
+
+    @GetMapping
+    public List<Group> getUserGroups(@RequestHeader Long userId) {
+        return groupService.getUserGroups(userId);
     }
 }

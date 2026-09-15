@@ -5,6 +5,7 @@ import com.alahlymomkn.common.exceptions.AccessDeniedException;
 import com.alahlymomkn.common.exceptions.ResourceNotFoundException;
 import com.alahlymomkn.common.exceptions.RoleNotFoundException;
 import com.alahlymomkn.group.dto.GroupResponseDto;
+import com.alahlymomkn.group.dto.MemberResponseDto;
 import com.alahlymomkn.group.entity.Group;
 import com.alahlymomkn.group.entity.GroupMember;
 import com.alahlymomkn.group.mapper.GroupMapper;
@@ -109,5 +110,13 @@ public class GroupService {
 
     public List<Group> getUserGroups(Long userId) {
         return groupRepository.findGroupsByUserId(userId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<MemberResponseDto> getGroupMembers(Long requesterId, Long groupId) {
+        validateMemberAccess(requesterId, groupId);
+        return memberRepository.findAllByGroupId(groupId).stream()
+                .map(groupMapper::toMemberResponseDto)
+                .toList();
     }
 }

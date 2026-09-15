@@ -18,7 +18,6 @@ import java.util.List;
 public class TransactionService {
 
     private final TransactionRepository transactionRepository;
-    private final TransactionMapper transactionMapper;
 
     @Transactional(propagation = Propagation.MANDATORY)
     public void record(BigDecimal amount,
